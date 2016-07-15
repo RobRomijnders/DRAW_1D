@@ -11,16 +11,18 @@ if 'rob-laptop' in socket.gethostname():
   sys.path.append('/home/rob/Dropbox/ml_projects/LSTM/UCR_TS_Archive_2015/')
   sys.path.append('/home/rob/Dropbox/ml_projects/DRAW_1D/')
   direc = '/home/rob/Dropbox/ml_projects/LSTM/UCR_TS_Archive_2015'  #Location of the UCR database
+  direc_plot = '/home/rob/Dropbox/ml_projects/DRAW_1D/canvas/'  #Location for plotting the canvases
 elif 'rob-com' in socket.gethostname():
-  sys.path.append('/home/rob/Dropbox/ml_projects/LSTM/UCR_TS_Archive_2015/')
+  sys.path.append('/home/rob/Documents/DRAW_1D/UCR_TS_Archive_2015')
   sys.path.append('/home/rob/Documents/DRAW_1D/')
-  direc = '/home/rob/Documents/LSTM/UCR_TS_Archive_2015'  #Location of the UCR database
+  direc = '/home/rob/Documents/DRAW_1D/UCR_TS_Archive_2015'  #Location of the UCR database
+  direc_plot = '/home/rob/Documents/DRAW_1D/canvas/'  #Location for plotting the canvases
+
 
 import numpy as np
 import tensorflow as tf
 from plot_DRAW_1D import *
 import matplotlib.pyplot as plt
-from tensorflow.models.rnn.rnn_cell import LSTMCell
 
 
 
@@ -28,13 +30,13 @@ from tensorflow.models.rnn.rnn_cell import LSTMCell
 hidden_size_enc = 256       # hidden size of the encoder
 hidden_size_dec = 256       # hidden size of the decoder
 patch_read = 5              # Size of patch to read
-patch_write = 5             # Size of patch to write
+patch_write = 5/             # Size of patch to write
 read_size = 2*patch_read
 write_size = patch_write
 num_l=10                    # Dimensionality of the latent space
 sl=10                       # Sequence length
 batch_size=100
-max_iterations=1000
+max_iterations=40000
 learning_rate=1e-3
 eps=1e-8                    # Small number to prevent numerical instability
 
@@ -45,6 +47,7 @@ write_params = []          # A list to save write parameters
 write_gaussian = []           # A list to save Gaussian parameters for writing
 Nplot = 5
 ratio_train = 0.8
+dropout = 0.8
 
 """Load the data"""
 # NonInvasiveFatalECG_Thorax2
@@ -199,8 +202,11 @@ def write(h_dec):
 with tf.variable_scope("placeholders") as scope:
   x = tf.placeholder(tf.float32,shape=(batch_size,D)) # input [batch_size, D]
   e = tf.random_normal((batch_size,num_l), mean=0, stddev=1) # Qsampler noise
-  lstm_enc = LSTMCell(hidden_size_enc, read_size+hidden_size_dec) # encoder Op
-  lstm_dec = LSTMCell(hidden_size_dec, num_l) # decoder Op
+  keep_prob = tf.placeholder("float")
+  lstm_enc = tf.nn.rnn_cell.LSTMCell(hidden_size_enc, read_size+hidden_size_dec) # encoder Op
+  lstm_enc = tf.nn.rnn_cell.DropoutWrapper(lstm_enc,output_keep_prob = keep_prob)
+  lstm_dec = tf.nn.rnn_cell.LSTMCell(hidden_size_dec, num_l) # decoder Op
+  lstm_dec = tf.nn.rnn_cell.DropoutWrapper(lstm_dec,output_keep_prob = keep_prob)
 
 with tf.variable_scope("States") as scope:
   canvas=[0]*sl # The canves gets sequentiall painted on
@@ -275,20 +281,21 @@ sess.run(tf.initialize_all_variables())
 for i in range(max_iterations):
   batch_ind = np.random.choice(N,batch_size,replace=False)
   xtrain = X_train[batch_ind]
-  feed_dict={x:xtrain}
+  feed_dict={x:xtrain,keep_prob: dropout}
   results=sess.run(fetches,feed_dict)
   costs_recon[i],costs_lat[i],_=results
   if i%100==0:
     print("iter=%d : cost_recon: %f cost_lat: %f" % (i,costs_recon[i],costs_lat[i]))
 
+feed_dict[keep_prob] = 1.0
+
 read_params_fetch = sess.run(read_params,feed_dict) #List of length (sl) with np arrays in [batch_size,2]
 write_params_fetch = sess.run(write_params,feed_dict)
 write_gaussian_fetch = sess.run(write_gaussian,feed_dict)
 canvases = sess.run(canvas,feed_dict)
-direc_plot = '/home/rob/Dropbox/ml_projects/DRAW_1D/canvas/'
 plot_DRAW_read(read_params_fetch,write_params_fetch,write_gaussian_fetch, feed_dict[x],direc_plot,5,canvases)
 #Now go to the directory and run  (after install ImageMagick)
-#  convert -delay 20 -loop 0 *.png mnist.gif
+#  convert -delay 20 -loop 0 *.png ecg.gif
 
 
 
