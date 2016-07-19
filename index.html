@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Draw 1D by RobRomijnders</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Draw 1D</h1>
+        <p>Deep Recurrent Attentive Writer for 1D data</p>
+
+        <p class="view"><a href="https://github.com/RobRomijnders/DRAW_1D">View the Project on GitHub <small>RobRomijnders/DRAW_1D</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/RobRomijnders/DRAW_1D/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/RobRomijnders/DRAW_1D/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/RobRomijnders/DRAW_1D">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="deep-recurrent-attentive-writer-for-1-dimensional-data" class="anchor" href="#deep-recurrent-attentive-writer-for-1-dimensional-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Deep Recurrent Attentive Writer for 1 dimensional data</h1>
+
+<p>This post takes our <a href="https://robromijnders.github.io/DRAW/">implementation for DRAW</a> and rewrites them for 1 dimensional signals.</p>
+
+<h1>
+<a id="plots" class="anchor" href="#plots" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Plots</h1>
+
+<p>The <a href="http://www.cs.ucr.edu/%7Eeamonn/time_series_data/">UCR database</a> supplies with applicable time series to show our implementation on. For this experiment, we chose the ECG5000 dataset. Note that the ECG's run from R-peak to R-peak.
+<img src="https://github.com/RobRomijnders/DRAW_1D/blob/master/canvas/ecg5.gif?raw=True" alt="Example_ecg"></p>
+
+<ul>
+<li>The <strong>left</strong> column displays the original signal and the read bar</li>
+<li>The __middle_ column displays the current Gaussians about to be written</li>
+<li>The <strong>right</strong> column displays the written signal plus the write bar</li>
+</ul>
+
+<p>Every time-step, the network write to the canvas in the right columns. In this writing operation, we add a mixture of Gaussians to the canvas. Gaussians need only two parameters, which makes them suited for this task. The middle columns plots in <em>blue</em> the five individual Gaussians. The <em>red</em> curve is the summation of the five Gaussians. </p>
+
+<p>In the <a href="https://robromijnders.github.io/DRAW/">original post</a> we discuss some context of the DRAW and refer to additional material. </p>
+
+<p>As always, I am curious to any comments and questions. Reach me at <a href="mailto:romijndersrob@gmail.com">romijndersrob@gmail.com</a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/RobRomijnders">RobRomijnders</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
