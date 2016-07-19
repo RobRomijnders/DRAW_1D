@@ -30,7 +30,7 @@ import matplotlib.pyplot as plt
 hidden_size_enc = 256       # hidden size of the encoder
 hidden_size_dec = 256       # hidden size of the decoder
 patch_read = 5              # Size of patch to read
-patch_write = 5/             # Size of patch to write
+patch_write = 5             # Size of patch to write
 read_size = 2*patch_read
 write_size = patch_write
 num_l=10                    # Dimensionality of the latent space
